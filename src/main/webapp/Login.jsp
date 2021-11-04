@@ -1,16 +1,12 @@
-<%@page import="Controlador.Conexion"%>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="ISO-8859-1">
-<title>Insert title here</title>
+<title>Login</title>
 </head>
 <body>
-<%
-	Conexion cnn=new Conexion();
-	cnn.Conecta();
-%>
+<h1>Hola mundo</h1>
 </body>
 </html>
