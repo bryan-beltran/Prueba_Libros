@@ -91,4 +91,17 @@ public class LibroDAO {
 		return resul;
 	}
 	
+	/*METODO CARGAR ARCHIVO*/
+	public boolean Cargar_Libros(String URL) {
+		boolean resul = false;
+		try {
+			String sql = "load data infile '"+URL+"' into table libro fields terminated by ',' lines terminated by '\r\n'";
+			ps = con.prepareStatement(sql);
+			resul = ps.executeUpdate() > 0;
+		}catch(SQLException ex) {
+			JOptionPane.showMessageDialog(null, "Error al registrar los libros: "+ ex);
+		} 
+		return resul;
+	}
+	
 }

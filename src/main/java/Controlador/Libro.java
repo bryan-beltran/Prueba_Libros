@@ -1,11 +1,18 @@
 package Controlador;
 
+
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+
 import javax.servlet.ServletException;
+import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.Part;
 import javax.swing.JOptionPane;
 
 import Modelo.LibroDAO;
@@ -15,6 +22,7 @@ import Modelo.LibroDTO;
  * Servlet implementation class Libro
  */
 @WebServlet("/Libro")
+@MultipartConfig/*Para que identifique(reconozca) un archivo*/
 public class Libro extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
@@ -97,18 +105,54 @@ public class Libro extends HttpServlet {
 			codigo = request.getParameter("cod");
 			int op=JOptionPane.showConfirmDialog(null, "Deseas eliminar el libro con ISBN: " + codigo);
 			if(op==0) {
-				if (libDao.Eliminar_Libro(codigo)) {
-					response.sendRedirect("Libros.jsp?men=Libro Eliminado");
-				}else {
-					response.sendRedirect("Libros.jsp?men=Libro no Eliminado");
-				}
+			if (libDao.Eliminar_Libro(codigo)) {
+				response.sendRedirect("Libros.jsp?men=Libro Eliminado");
+			}
 			}else if(op==1){
-					response.sendRedirect("Libros.jsp?");
-				}else {
-					response.sendRedirect("Libros.jsp?men=A");
-				}
+				response.sendRedirect("Libros.jsp?men=Libro no Eliminado");
+			}else {
+				response.sendRedirect("Libros.jsp?men=Acción Cancelada");
+			}
 		}
 		
+		/*METODO SUBIR ARCHIVOS*/
+		if(request.getParameter("cargar")!=null) {
+			
+			Part archivo = request.getPart("archivo");
+			String Url="C:/Users/raton/Documents/Eclipse_Work_Space/Prestamos/src/main/webapp/Documentos/";
+			
+			if(archivo.getContentType().equals("application/vnd.ms-excel")) {
+				
+				try {
+					InputStream file = archivo.getInputStream();
+					File copia = new File(Url+"prueba08.csv");
+					FileOutputStream escribir = new FileOutputStream(copia);
+					int num = file.read();
+					
+					while(num != -1) {
+						escribir.write(num);
+						num = file.read();
+					}
+					file.close();
+					escribir.close();
+					JOptionPane.showMessageDialog(null, "Se cargo el archivo correctamente");
+					if(libDao.Cargar_Libros(Url+"prueba08.csv")) {
+						response.sendRedirect("Libros.jsp?men=Se registo los libros correctamente");
+					}else {
+						response.sendRedirect("Libros.jsp?men=No se registo los libros correctamente");
+					}
+					} catch (Exception e) {
+						JOptionPane.showMessageDialog(null, "Error al cargo el archivo: "+e);
+						response.sendRedirect("Libros.jsp?men=Error al cargo el archivo: ");
+						
+					}
+				
+			}else {
+				response.sendRedirect("Libros.jsp?men=Formato de archivo no permitido");
+			}
+			
+			
+		}
 	}
 
 }
